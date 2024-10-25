@@ -64,7 +64,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
                 ),
                 Text(
                   'Registration',
-                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 36),
                 ),
                 SizedBox(height: 50),
                 _buildTextField("Name", (val) => name = val),
@@ -73,23 +73,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
                 _buildTextField("University", (val) => university = val),
                 _buildTermsAndConditions(),
                 SizedBox(height: 25),
-                ElevatedButton(
-                  onPressed: () async {},
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.all(12.0),
-                    backgroundColor: Color(0xFF2980b9),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                  child: Text(
-                    'Complete (2/2)',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
+                _buildNextButton(),
               ],
             ),
           ),
@@ -170,6 +154,32 @@ class _SignUpInfoState extends State<SignUpInfo> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildNextButton() {
+    return Container(
+      padding: const EdgeInsets.only(top: 25.0),
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          elevation: 5.0,
+          backgroundColor: const Color(0xFF2980b9),
+          padding: const EdgeInsets.all(12.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+        onPressed: () async {},
+        child: const Text(
+          'Complete (2/2)',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
     );
   }
 }
