@@ -24,17 +24,20 @@ class _OrdersPageState extends State<OrdersPage> {
   List<Product> orders = [
     Product(
         name: 'Product 1',
-        imageUrl: 'https://via.placeholder.com/150',
+        imageUrl:
+            'https://static.vecteezy.com/system/resources/previews/036/324/708/large_2x/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
         price: 20.0,
         quantity: 2),
     Product(
         name: 'Product 2',
-        imageUrl: 'https://via.placeholder.com/150',
+        imageUrl:
+            'https://static.vecteezy.com/system/resources/previews/036/324/708/large_2x/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
         price: 30.0,
         quantity: 1),
     Product(
         name: 'Product 3',
-        imageUrl: 'https://via.placeholder.com/150',
+        imageUrl:
+            'https://static.vecteezy.com/system/resources/previews/036/324/708/large_2x/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
         price: 50.0,
         quantity: 3),
   ];
@@ -52,6 +55,38 @@ class _OrdersPageState extends State<OrdersPage> {
     setState(() {
       orders[index].quantity = newQuantity;
     });
+  }
+
+  // Show purchase result dialog
+  void _showPurchaseDialog(bool success) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(success ? 'Success' : 'Failed'),
+          content: Text(success
+              ? 'Your purchase was successful!'
+              : 'Your purchase could not be completed.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Proceed with the purchase
+  void _proceedPurchase() {
+    // You can implement your purchase logic here
+    bool purchaseSuccessful = true; // Simulate success/failure
+
+    // Show the dialog with purchase result
+    _showPurchaseDialog(purchaseSuccessful);
   }
 
   @override
@@ -126,12 +161,7 @@ class _OrdersPageState extends State<OrdersPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Add your purchase logic here
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Proceeding to purchase...')),
-          );
-        },
+        onPressed: _proceedPurchase,
         label: const Text('Proceed Purchase'),
         icon: const Icon(Icons.shopping_cart),
       ),
