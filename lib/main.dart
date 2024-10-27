@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_app/screens/authentication/login.dart';
+import 'package:shopping_app/screens/orders/orders.dart';
 import 'package:shopping_app/screens/product_grid/product_details.dart';
 import 'package:shopping_app/screens/product_grid/product_gird.dart';
 
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'NanumSquareRound',
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const MyWidget(),
+      home: OrdersPage(),
     );
   }
 }
