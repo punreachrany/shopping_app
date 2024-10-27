@@ -28,11 +28,17 @@ class _SignUpInfoState extends State<SignUpInfo> {
       initialDate: pickedDate ?? DateTime.now(),
       firstDate: DateTime(1970),
       lastDate: DateTime(2050),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light(),
+          child: child!,
+        );
+      },
     );
 
     if (date != null) {
       setState(() {
-        pickedDate = date;
+        pickedDate = date; // Update pickedDate only if date is not null
       });
     }
   }
@@ -44,35 +50,35 @@ class _SignUpInfoState extends State<SignUpInfo> {
         elevation: 0.0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 30.0),
+        padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 30.0),
         child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   'Email',
                   style: TextStyle(fontSize: 36),
                 ),
-                Text(
+                const Text(
                   'Registration',
                   style: TextStyle(fontSize: 36),
                 ),
-                SizedBox(height: 50),
+                const SizedBox(height: 50),
                 _buildTextField("Name", (val) => name = val),
                 _buildTextField("Gender", (val) => gender = val),
                 _buildDateField(),
                 _buildTextField("University", (val) => university = val),
                 _buildTermsAndConditions(),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 _buildNextButton(),
               ],
             ),
@@ -88,7 +94,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
       child: TextFormField(
         decoration: InputDecoration(
           labelText: label,
-          border: UnderlineInputBorder(),
+          border: const UnderlineInputBorder(),
           hintStyle: TextStyle(color: Colors.grey[600], fontSize: 18),
         ),
         validator: (val) => val!.isEmpty ? 'Input Your $label' : null,
@@ -102,7 +108,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
       padding: const EdgeInsets.only(top: 15, bottom: 5.0),
       child: Row(
         children: <Widget>[
-          Expanded(
+          const Expanded(
             flex: 2,
             child: Text("Birthday",
                 style: TextStyle(color: Colors.black, fontSize: 18)),
@@ -124,7 +130,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
                             : Colors.grey[600],
                         fontSize: 18),
                   ),
-                  Icon(Icons.keyboard_arrow_down),
+                  const Icon(Icons.keyboard_arrow_down),
                 ],
               ),
             ),
@@ -139,14 +145,14 @@ class _SignUpInfoState extends State<SignUpInfo> {
       children: <Widget>[
         Checkbox(
           value: checkBoxValue,
-          activeColor: Color(0xFF2980b9),
+          activeColor: const Color(0xFF2980b9),
           onChanged: (bool? newValue) {
             setState(() {
               checkBoxValue = newValue!;
             });
           },
         ),
-        Expanded(
+        const Expanded(
           child: Text(
             'I accept the terms and policies of this SUSU mobile messenger application.',
             style: TextStyle(
