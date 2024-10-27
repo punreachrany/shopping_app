@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_app/screens/authentication/login.dart';
+import 'package:shopping_app/screens/product_grid/product_details.dart';
+import 'package:shopping_app/screens/product_grid/product_gird.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'NanumSquareRound',
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const Login(),
+      home: const MyWidget(),
     );
   }
 }
