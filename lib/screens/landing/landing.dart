@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_app/models/user.dart';
 import 'package:shopping_app/screens/authentication/login.dart';
 import 'package:shopping_app/screens/navigation_wrapper.dart';
+import 'package:shopping_app/services/user_provider.dart'; // Adjust the import based on your folder structure
 
 class Landing extends StatelessWidget {
-  // User _user;
+  const Landing({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final user =
-        User(name: "punreach", email: "punreach", password: "punreach");
-    if (user == null) {
-      print("NO User");
-      return Login();
-      // return LoginTesting();
-    } else {
-      print("Have a user logged in");
-      return NavigationWrapper();
-    }
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
+
+    return user == null ? const Login() : NavigationWrapper();
   }
 }

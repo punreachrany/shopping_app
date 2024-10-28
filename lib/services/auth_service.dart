@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:shopping_app/shares/constants.dart';
 
 class AuthService {
-  Future<bool> registerUser(String name, String email, String password,
+  // Register User
+  Future<String?> registerUser(String name, String email, String password,
       String birthday, String gender) async {
     final url = Uri.parse('$BASE_URL/users/register');
     final response = await http.post(
@@ -18,7 +19,12 @@ class AuthService {
       }),
     );
 
-    return response.statusCode == 201; // Assuming 201 Created on success
+    if (response.statusCode == 201) {
+      final data = json.decode(response.body);
+      return data['jwt']; // Return the JWT token
+    }
+
+    return null; // Return null if registration failed
   }
 
   Future<String?> loginUser(String email, String password) async {

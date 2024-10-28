@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopping_app/screens/navigation_wrapper.dart';
+import 'package:shopping_app/services/auth_service.dart';
+import 'package:shopping_app/services/user_provider.dart'; // Import your AuthService
 
 class SignUpInfo extends StatefulWidget {
   final String email;
@@ -18,7 +22,6 @@ class _SignUpInfoState extends State<SignUpInfo> {
   // text field state
   String? name;
   String? gender;
-  String? university;
   String error = '';
   bool checkBoxValue = false;
 
@@ -39,6 +42,81 @@ class _SignUpInfoState extends State<SignUpInfo> {
     if (date != null) {
       setState(() {
         pickedDate = date; // Update pickedDate only if date is not null
+      });
+    }
+  }
+
+  Future<void> _register() async {
+    if (_formKey.currentState!.validate() && checkBoxValue) {
+      setState(() {
+        loading = true; // Start loading
+      });
+
+      final authService = AuthService();
+      String? jwt = await authService.registerUser(
+        name!,
+        widget.email,
+        widget.password,
+        "1997-09-30",
+        gender!,
+      );
+
+      setState(() {
+        loading = false; // Stop loading
+      });
+
+      if (jwt != null) {
+        // If registration is successful, update UserProvider
+        Provider.of<UserProvider>(context, listen: false)
+            .login(widget.email, widget.password);
+
+        // Show success dialog
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Success'),
+              content: const Text('Registration successful!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              NavigationWrapper()), // Navigate to main app page
+                    );
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // If registration fails, show error dialog
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Failed'),
+              content: const Text('Registration failed. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else if (!checkBoxValue) {
+      setState(() {
+        error = 'You must accept the terms and conditions.';
       });
     }
   }
@@ -76,10 +154,16 @@ class _SignUpInfoState extends State<SignUpInfo> {
                 _buildTextField("Name", (val) => name = val),
                 _buildTextField("Gender", (val) => gender = val),
                 _buildDateField(),
-                _buildTextField("University", (val) => university = val),
                 _buildTermsAndConditions(),
                 const SizedBox(height: 25),
                 _buildNextButton(),
+                if (error.isNotEmpty) ...[
+                  const SizedBox(height: 20),
+                  Text(
+                    error,
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ],
               ],
             ),
           ),
@@ -154,7 +238,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
         ),
         const Expanded(
           child: Text(
-            'I accept the terms and policies of this SUSU mobile messenger application.',
+            'I accept the terms and policies of this SUSU Shopping Application.',
             style: TextStyle(
                 fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey),
           ),
@@ -176,15 +260,17 @@ class _SignUpInfoState extends State<SignUpInfo> {
             borderRadius: BorderRadius.circular(10.0),
           ),
         ),
-        onPressed: () async {},
-        child: const Text(
-          'Complete (2/2)',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        onPressed: loading ? null : _register, // Disable button while loading
+        child: loading
+            ? const CircularProgressIndicator() // Show loading indicator
+            : const Text(
+                'Complete (2/2)',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
       ),
     );
   }

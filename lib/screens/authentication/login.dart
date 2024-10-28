@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shopping_app/screens/authentication/sign_up.dart';
+import 'package:shopping_app/screens/navigation_wrapper.dart';
 import 'package:shopping_app/services/auth_service.dart';
+import 'package:shopping_app/services/user_provider.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -19,25 +22,54 @@ class _LoginState extends State<Login> {
       final authService = AuthService();
       String? jwt = await authService.loginUser(email, password);
 
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(jwt != null ? 'Success' : 'Failed'),
-            content: Text(jwt != null
-                ? 'Login successful! Your JWT: $jwt'
-                : 'Invalid email or password.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      if (jwt != null) {
+        // If JWT is obtained, update the UserProvider
+        Provider.of<UserProvider>(context, listen: false).login(email,
+            password); // You may want to modify this line based on how you implement login in UserProvider
+
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Success'),
+              content: const Text('Login successful!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              NavigationWrapper()), // Navigate to your main app page
+                    );
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // If login fails
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Failed'),
+              content: const Text('Invalid email or password.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
 

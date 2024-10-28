@@ -64,7 +64,7 @@ class _SignUpState extends State<SignUp> {
                   hintText: 'Input your password',
                   isPassword: true,
                   validator: (val) =>
-                      val!.length < 6 ? 'Enter a password 6+ char long' : null,
+                      val!.length < 5 ? 'Enter a password 6+ char long' : null,
                   onChanged: (val) {
                     setState(() => password = val);
                   },
