@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_app/screens/authentication/sign_up.dart';
+import 'package:shopping_app/services/auth_service.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -10,11 +11,35 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-  // text field state
   late String email;
   late String password;
-  String error = '';
-  bool checkBoxValue = false;
+
+  Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      final authService = AuthService();
+      String? jwt = await authService.loginUser(email, password);
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(jwt != null ? 'Success' : 'Failed'),
+            content: Text(jwt != null
+                ? 'Login successful! Your JWT: $jwt'
+                : 'Invalid email or password.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +109,6 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Container(
-                      //padding: EdgeInsets.symmetric(vertical: 5.0),
                       padding: const EdgeInsets.symmetric(
                           vertical: 3.0, horizontal: 15),
                       decoration: BoxDecoration(
@@ -95,7 +119,6 @@ class _LoginState extends State<Login> {
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          // labelText: "Email",
                           hintText: 'Email',
                           hintStyle: TextStyle(
                             color: Colors.grey[600],
@@ -122,14 +145,14 @@ class _LoginState extends State<Login> {
                       child: TextFormField(
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: 'Passwords',
+                          hintText: 'Password',
                           hintStyle: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 16,
                           ),
                         ),
-                        validator: (val) => (val == null || val.length < 6)
-                            ? 'Enter a password 6+ characters long'
+                        validator: (val) => (val == null || val.length < 5)
+                            ? 'Enter a password 5+ characters long'
                             : null,
                         onChanged: (val) {
                           setState(() => password = val);
@@ -162,9 +185,9 @@ class _LoginState extends State<Login> {
                           padding: const EdgeInsets.all(12.0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                          ), // Set the button's background color
+                          ),
                         ),
-                        onPressed: () async {},
+                        onPressed: _login,
                         child: const Text(
                           'Login',
                           style: TextStyle(
@@ -185,9 +208,9 @@ class _LoginState extends State<Login> {
                           padding: const EdgeInsets.all(12.0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                          ), // Set the button's background color
+                          ),
                         ),
-                        onPressed: () async {
+                        onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(

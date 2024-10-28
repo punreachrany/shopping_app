@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'NanumSquareRound',
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: UserDetails(),
+      home: const Login(),
     );
   }
 }
