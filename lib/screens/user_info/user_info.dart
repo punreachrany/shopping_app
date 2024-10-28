@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_app/services/auth_service.dart';
 
 class UserDetails extends StatelessWidget {
+  final AuthService _auth = AuthService();
   final String userName = '라비 버느리치';
   final String profileImageUrl =
       'https://www.w3schools.com/w3images/avatar2.png'; // Placeholder image
+  final String token = "token"; // will change
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +106,8 @@ class UserDetails extends StatelessWidget {
                         ),
                         TextButton(
                           child: const Text('Logout'),
-                          onPressed: () {
+                          onPressed: () async {
+                            await _auth.logoutUser(token);
                             Navigator.of(context).pop();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Logged out!')),

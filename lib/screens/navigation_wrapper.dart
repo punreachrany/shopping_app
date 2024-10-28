@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shopping_app/screens/orders/orders.dart';
 import 'package:shopping_app/screens/product_grid/product_gird.dart';
 import 'package:shopping_app/screens/user_info/user_info.dart';
 import 'package:shopping_app/themes/colors.dart';
@@ -13,7 +14,7 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
   int currentTab = 0;
   final List<Widget> screens = [
     ProductGridPage(), // Home
-    UserDetails(), // Chat
+    OrdersPage(), // Shopping_Cart
     UserDetails(), // Developer
   ];
 
@@ -45,12 +46,12 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
                   currentTab = 0;
                 });
               }),
-              _buildNavItem(1, Icons.chat_bubble, "Chat", () {
+              _buildNavItem(1, Icons.shopping_cart, "Cart", () {
                 setState(() {
                   currentTab = 1;
                 });
               }),
-              _buildNavItem(2, Icons.developer_mode, "Developer", () {
+              _buildNavItem(2, Icons.person, "User", () {
                 setState(() {
                   currentTab = 2;
                 });

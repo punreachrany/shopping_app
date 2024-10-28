@@ -75,4 +75,22 @@ class AuthService {
 
     return null; // Return null if fetching user info failed
   }
+
+  // New method to check if user is logged in
+  Future<Map<String, dynamic>?> isLoggedIn(String token) async {
+    final url = Uri.parse('$BASE_URL/users/is_logged_in');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Send the token in headers
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body); // Return the response as a Map
+    }
+
+    return null; // Return null if fetching login status failed
+  }
 }
