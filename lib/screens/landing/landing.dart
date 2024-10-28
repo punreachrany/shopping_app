@@ -10,8 +10,22 @@ class Landing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    final user = userProvider.user;
 
-    return user == null ? const Login() : NavigationWrapper();
+    return FutureBuilder<bool>(
+      future: userProvider.isLoggedIn(), // Check if user is logged in
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // While the connection is waiting, show a loading spinner
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // Once the future is complete, check if user is logged in
+        if (snapshot.hasData && snapshot.data == true) {
+          return NavigationWrapper(); // User is logged in
+        } else {
+          return const Login(); // User is not logged in
+        }
+      },
+    );
   }
 }

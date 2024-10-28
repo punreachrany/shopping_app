@@ -17,36 +17,53 @@ class UserProvider with ChangeNotifier {
 
   // Method to log in the user
   Future<bool> login(String email, String password) async {
+    // Check if the user is already logged in
+    if (await isLoggedIn()) {
+      return true; // User is already logged in
+    }
+
     final token = await _authService.loginUser(email, password);
     if (token != null) {
-      // You might want to fetch user info after login
-      // For example:
-      final userInfo = await _authService.getUserInfo(token);
+      // Fetch user info after login
+      final userInfo = await _authService.getUserInfo();
       if (userInfo != null) {
         _user = User.fromJson(userInfo);
-        notifyListeners();
+        notifyListeners(); // Notify listeners of user state change
         return true; // Login success
       }
     }
     return false; // Login failed
   }
 
+  // Method to register a new user
+  Future<bool> register(String name, String email, String password,
+      String birthday, String gender) async {
+    final token = await _authService.registerUser(
+        name, email, password, birthday, gender);
+
+    if (token != null) {
+      // Fetch user info after successful registration
+      final userInfo = await _authService.getUserInfo();
+      if (userInfo != null) {
+        _user = User.fromJson(userInfo); // Store user information
+        notifyListeners(); // Notify listeners of user state change
+        return true; // Registration success
+      }
+    }
+    return false; // Registration failed
+  }
+
   // Method to log out the user
   Future<void> logout() async {
     if (_user != null) {
-      // Assuming you have the JWT token saved somewhere
-      await _authService.logoutUser(
-          _user!.email); // Adjust this line based on your logout logic
-      _user = null;
-      notifyListeners(); // Notify listeners to update the UI
+      await _authService.logoutUser(); // Log out the user
+      _user = null; // Clear user data
+      notifyListeners(); // Notify listeners of user state change
     }
   }
 
   // Method to check if the user is logged in
   Future<bool> isLoggedIn() async {
-    // You might need to get the token from shared preferences or a secure storage
-    final token = ''; // Retrieve your token here
-    final result = await _authService.isLoggedIn(token);
-    return result?['is_logged_in'] ?? false;
+    return await _authService.isLoggedIn(); // Check if the user is logged in
   }
 }

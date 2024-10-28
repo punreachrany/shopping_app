@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shopping_app/shares/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   // Register User
@@ -21,6 +22,8 @@ class AuthService {
 
     if (response.statusCode == 201) {
       final data = json.decode(response.body);
+      // Save the JWT token in shared preferences
+      await _saveToken(data['jwt']);
       return data['jwt']; // Return the JWT token
     }
 
@@ -40,13 +43,16 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      // Save the JWT token in shared preferences
+      await _saveToken(data['jwt']);
       return data['jwt']; // Return the JWT token
     }
 
     return null; // Return null if login failed
   }
 
-  Future<String> logoutUser(String token) async {
+  Future<String> logoutUser() async {
+    final token = await _getToken(); // Get token from shared preferences
     final url = Uri.parse('$BASE_URL/users/logout');
     final response = await http.post(
       url,
@@ -59,13 +65,15 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      await _clearToken(); // Clear the token from shared preferences
       return data['message'];
     }
 
     return 'failed'; // Return failed message if logout failed
   }
 
-  Future<Map<String, dynamic>?> getUserInfo(String token) async {
+  Future<Map<String, dynamic>?> getUserInfo() async {
+    final token = await _getToken(); // Get token from shared preferences
     final url = Uri.parse('$BASE_URL/users/info');
     final response = await http.get(
       url,
@@ -83,20 +91,26 @@ class AuthService {
   }
 
   // New method to check if user is logged in
-  Future<Map<String, dynamic>?> isLoggedIn(String token) async {
-    final url = Uri.parse('$BASE_URL/users/is_logged_in');
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // Send the token in headers
-      },
-    );
+  Future<bool> isLoggedIn() async {
+    final token = await _getToken(); // Get token from shared preferences
+    return token != null; // Return true if the token exists
+  }
 
-    if (response.statusCode == 200) {
-      return json.decode(response.body); // Return the response as a Map
-    }
+  // Save token to shared preferences
+  Future<void> _saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('jwt', token);
+  }
 
-    return null; // Return null if fetching login status failed
+  // Get token from shared preferences
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jwt');
+  }
+
+  // Clear token from shared preferences
+  Future<void> _clearToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('jwt');
   }
 }

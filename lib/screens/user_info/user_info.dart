@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_app/screens/authentication/login.dart';
 import 'package:shopping_app/services/auth_service.dart';
 
 class UserDetails extends StatelessWidget {
@@ -107,10 +108,12 @@ class UserDetails extends StatelessWidget {
                         TextButton(
                           child: const Text('Logout'),
                           onPressed: () async {
-                            await _auth.logoutUser(token);
-                            Navigator.of(context).pop();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Logged out!')),
+                            await _auth.logoutUser();
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      Login()), // Navigate to main app page
                             );
                           },
                         ),
