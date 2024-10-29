@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Login(), // Your landing page
+      home: const Landing(), // Your landing page
     );
   }
 }

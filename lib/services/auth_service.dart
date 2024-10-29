@@ -56,15 +56,13 @@ class AuthService {
     final token = await _getToken(); // Get token from shared preferences
     // Define headers including the JWT in the Cookie header
 
-    print("\nLogout Token : ${token!}\n");
-
-    final my_headers = {
+    final headers = {
       'Content-Type': 'text/plain',
       'Cookie': 'jwt=${token}', // Adding JWT as a cookie
     };
 
     final url = Uri.parse('$BASE_URL/users/logout/');
-    final response = await http.post(url, headers: my_headers);
+    final response = await http.post(url, headers: headers);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -79,11 +77,11 @@ class AuthService {
     final token = await _getToken(); // Get token from shared preferences
     final url = Uri.parse('$BASE_URL/users/info');
 
-    final my_headers = {
+    final headers = {
       'Content-Type': 'text/plain',
       'Cookie': 'jwt=${token}', // Adding JWT as a cookie
     };
-    final response = await http.get(url, headers: my_headers);
+    final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       return json.decode(response.body); // Return user info as a Map
@@ -95,7 +93,24 @@ class AuthService {
   // New method to check if user is logged in
   Future<bool> isLoggedIn() async {
     final token = await _getToken(); // Get token from shared preferences
-    return token != null; // Return true if the token exists
+    if (token != null) {
+      final url = Uri.parse('$BASE_URL/users/is_logged_in/');
+
+      final headers = {
+        'Content-Type': 'text/plain',
+        'Cookie': 'jwt=${token}', // Adding JWT as a cookie
+      };
+      final response = await http.get(url, headers: headers);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data["is_logged_in"] == false) {
+          await _clearToken();
+        }
+        return true;
+      }
+    }
+
+    return false; // Return true if the token exists
   }
 
   // Save token to shared preferences
