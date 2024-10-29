@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shopping_app/shares/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shopping_app/shares/token_service.dart';
 
 class AuthService {
-  // Register User
+  // =======================
+  // USER REGISTRATION & LOGIN
+  // =======================
+
+  /// Register a new user and return the JWT token on success.
   Future<String?> registerUser(String name, String email, String password,
       String birthday, String gender) async {
     final url = Uri.parse('$BASE_URL/users/register/');
@@ -22,14 +26,13 @@ class AuthService {
 
     if (response.statusCode == 201) {
       final data = json.decode(response.body);
-      // Save the JWT token in shared preferences
-      await _saveToken(data['jwt']);
-      return data['jwt']; // Return the JWT token
+      await TokenService().saveToken(data['jwt']); // Save JWT to preferences
+      return data['jwt'];
     }
-
     return null; // Return null if registration failed
   }
 
+  /// Log in the user and return the JWT token on success.
   Future<String?> loginUser(String email, String password) async {
     final url = Uri.parse('$BASE_URL/users/login/');
     final response = await http.post(
@@ -43,91 +46,83 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      // Save the JWT token in shared preferences
-      await _saveToken(data['jwt']);
-      print("\nLogin Token : ${data['jwt']}\n");
-      return data['jwt']; // Return the JWT token
+      await TokenService().saveToken(data['jwt']); // Save JWT to preferences
+      return data['jwt'];
     }
-
     return null; // Return null if login failed
   }
 
+  // =======================
+  // LOGOUT FUNCTIONALITY
+  // =======================
+
+  /// Log out the user by clearing the token.
   Future<String> logoutUser() async {
-    final token = await _getToken(); // Get token from shared preferences
-    // Define headers including the JWT in the Cookie header
+    final token =
+        await TokenService().getToken(); // Retrieve JWT from preferences
+    final url = Uri.parse('$BASE_URL/users/logout/');
 
     final headers = {
       'Content-Type': 'text/plain',
-      'Cookie': 'jwt=${token}', // Adding JWT as a cookie
+      'Cookie': 'jwt=${token}', // Add JWT as a cookie
     };
 
-    final url = Uri.parse('$BASE_URL/users/logout/');
     final response = await http.post(url, headers: headers);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      await _clearToken(); // Clear the token from shared preferences
+      await TokenService().clearToken(); // Clear token from preferences
       return data['message'];
     }
-
-    return 'failed'; // Return failed message if logout failed
+    return 'failed'; // Return failure message if logout failed
   }
 
+  // =======================
+  // USER INFORMATION & SESSION STATUS
+  // =======================
+
+  /// Fetch the logged-in user's information.
   Future<Map<String, dynamic>?> getUserInfo() async {
-    final token = await _getToken(); // Get token from shared preferences
+    final token =
+        await TokenService().getToken(); // Retrieve JWT from preferences
     final url = Uri.parse('$BASE_URL/users/info');
 
     final headers = {
       'Content-Type': 'text/plain',
-      'Cookie': 'jwt=${token}', // Adding JWT as a cookie
+      'Cookie': 'jwt=${token}', // Add JWT as a cookie
     };
+
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       return json.decode(response.body); // Return user info as a Map
     }
-
     return null; // Return null if fetching user info failed
   }
 
-  // New method to check if user is logged in
+  /// Check if the user is currently logged in.
   Future<bool> isLoggedIn() async {
-    final token = await _getToken(); // Get token from shared preferences
+    final token =
+        await TokenService().getToken(); // Retrieve JWT from preferences
     if (token != null) {
       final url = Uri.parse('$BASE_URL/users/is_logged_in/');
 
       final headers = {
         'Content-Type': 'text/plain',
-        'Cookie': 'jwt=${token}', // Adding JWT as a cookie
+        'Cookie': 'jwt=${token}', // Add JWT as a cookie
       };
+
       final response = await http.get(url, headers: headers);
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data["is_logged_in"] == false) {
-          await _clearToken();
+        if (!data["is_logged_in"]) {
+          await TokenService()
+              .clearToken(); // Clear token if user is not logged in
         }
-        return true;
+        return data["is_logged_in"];
       }
     }
-
-    return false; // Return true if the token exists
-  }
-
-  // Save token to shared preferences
-  Future<void> _saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('jwt', token);
-  }
-
-  // Get token from shared preferences
-  Future<String?> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('jwt');
-  }
-
-  // Clear token from shared preferences
-  Future<void> _clearToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('jwt');
+    return false; // Return false if no valid token exists
   }
 }
