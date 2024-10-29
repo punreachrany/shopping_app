@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_app/screens/authentication/login.dart';
+import 'package:shopping_app/screens/user_info/report_error.dart';
 import 'package:shopping_app/services/auth_service.dart';
 
 class UserDetails extends StatelessWidget {
@@ -110,7 +111,10 @@ class UserDetails extends StatelessWidget {
           context,
           icon: Icons.error,
           title: 'Report Error',
-          onTap: () => _showSnackBar(context, 'Report Error tapped!'),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ReportErrorScreen()),
+          ),
         ),
         _buildLogoutMenuItem(context),
       ],
