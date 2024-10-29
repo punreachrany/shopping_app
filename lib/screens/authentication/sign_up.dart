@@ -40,11 +40,11 @@ class _SignUpState extends State<SignUp> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   'Email',
                   style: TextStyle(fontSize: 36),
                 ),
-                Text(
+                const Text(
                   'Registration',
                   style: TextStyle(fontSize: 36),
                 ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_app/screens/authentication/login.dart';
 import 'package:shopping_app/screens/landing/landing.dart';
 import 'package:shopping_app/services/user_provider.dart';
 

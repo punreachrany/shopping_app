@@ -27,7 +27,7 @@ class UserProvider with ChangeNotifier {
       // Fetch user info after login
       final userInfo = await _authService.getUserInfo();
       if (userInfo != null) {
-        _user = User.fromJson(userInfo);
+        _user = User.fromJson(userInfo); // Create User object from response
         notifyListeners(); // Notify listeners of user state change
         return true; // Login success
       }

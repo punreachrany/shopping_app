@@ -4,10 +4,8 @@ import 'package:shopping_app/services/auth_service.dart';
 
 class UserDetails extends StatelessWidget {
   final AuthService _auth = AuthService();
-  final String userName = '라비 버느리치';
-  final String profileImageUrl =
-      'https://www.w3schools.com/w3images/avatar2.png'; // Placeholder image
-  final String token = "token"; // will change
+
+  UserDetails({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,31 +15,58 @@ class UserDetails extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {
-              // Handle Settings button tap
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SettingsScreen(),
-                ),
-              );
-            },
+            onPressed: () => _navigateToSettings(context),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Line 1: User Picture and Name
-            Row(
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: _auth.getUserInfo(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData) {
+            return const Center(child: Text('No user data available.'));
+          }
+
+          final userInfo = snapshot.data!;
+          final String userName = userInfo['name'];
+          final String profileImageUrl = userInfo['profile_url'];
+          final String userBirthday = userInfo['birthday']; // Get the birthday
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundImage: NetworkImage(profileImageUrl),
-                ),
-                const SizedBox(width: 16),
+                _buildUserProfile(
+                    userName, profileImageUrl, userBirthday), // Pass birthday
+                const SizedBox(height: 20),
+                _buildMenuList(context),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// Builds the user profile section with picture, name, and birthday.
+  Widget _buildUserProfile(
+      String userName, String profileImageUrl, String userBirthday) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: NetworkImage(profileImageUrl),
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
                   userName,
                   style: const TextStyle(
@@ -49,87 +74,122 @@ class UserDetails extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 4), // Add some space
+                Text(
+                  userBirthday, // Display the birthday
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey, // Optional: make it a lighter color
+                  ),
+                ),
               ],
-            ),
-            const SizedBox(height: 20),
-
-            // Line 2: Announcement Tap
-            ListTile(
-              leading: const Icon(Icons.campaign, color: Colors.blue),
-              title: const Text('Announcement'),
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Announcement tapped!')),
-                );
-              },
-            ),
-            const Divider(),
-
-            // Line 3: Tutorial Tap
-            ListTile(
-              leading: const Icon(Icons.school, color: Colors.green),
-              title: const Text('Tutorial'),
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Tutorial tapped!')),
-                );
-              },
-            ),
-            const Divider(),
-
-            // Line 4: Report Error
-            ListTile(
-              leading: const Icon(Icons.error, color: Colors.red),
-              title: const Text('Report Error'),
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Report Error tapped!')),
-                );
-              },
-            ),
-            const Divider(),
-
-            // Line 5: Logout
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.grey),
-              title: const Text('Logout'),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Logout'),
-                      content: const Text('Are you sure you want to logout?'),
-                      actions: [
-                        TextButton(
-                          child: const Text('Cancel'),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                        TextButton(
-                          child: const Text('Logout'),
-                          onPressed: () async {
-                            final result = await _auth.logoutUser();
-                            if (result == "failed") {
-                              Navigator.pop(context);
-                            } else {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        Login()), // Navigate to main app page
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
             ),
           ],
         ),
-      ),
+      ],
+    );
+  }
+
+  /// Builds the menu list for actions available to the user.
+  Widget _buildMenuList(BuildContext context) {
+    return Column(
+      children: [
+        _buildMenuItem(
+          context,
+          icon: Icons.campaign,
+          title: 'Announcement',
+          onTap: () => _showSnackBar(context, 'Announcement tapped!'),
+        ),
+        _buildMenuItem(
+          context,
+          icon: Icons.school,
+          title: 'Tutorial',
+          onTap: () => _showSnackBar(context, 'Tutorial tapped!'),
+        ),
+        _buildMenuItem(
+          context,
+          icon: Icons.error,
+          title: 'Report Error',
+          onTap: () => _showSnackBar(context, 'Report Error tapped!'),
+        ),
+        _buildLogoutMenuItem(context),
+      ],
+    );
+  }
+
+  /// Builds a menu item.
+  Widget _buildMenuItem(BuildContext context,
+      {required IconData icon,
+      required String title,
+      required Function() onTap}) {
+    return Column(
+      children: [
+        ListTile(
+          leading: Icon(icon),
+          title: Text(title),
+          onTap: onTap,
+        ),
+        const Divider(),
+      ],
+    );
+  }
+
+  /// Builds the logout menu item.
+  Widget _buildLogoutMenuItem(BuildContext context) {
+    return _buildMenuItem(
+      context,
+      icon: Icons.logout,
+      title: 'Logout',
+      onTap: () => _showLogoutDialog(context),
+    );
+  }
+
+  /// Shows a snackbar message.
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// Shows a confirmation dialog for logging out.
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text('Logout'),
+              onPressed: () async {
+                final result = await _auth.logoutUser();
+                if (result == "failed") {
+                  Navigator.pop(context);
+                } else {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const Login()), // Navigate to login screen
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Navigates to the settings screen.
+  void _navigateToSettings(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SettingsScreen()),
     );
   }
 }
