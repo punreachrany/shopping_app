@@ -24,8 +24,8 @@ class _LoginState extends State<Login> {
 
       if (jwt != null) {
         // If JWT is obtained, update the UserProvider
-        Provider.of<UserProvider>(context, listen: false).login(email,
-            password); // You may want to modify this line based on how you implement login in UserProvider
+        // Provider.of<UserProvider>(context, listen: false).login(email,
+        //     password); // You may want to modify this line based on how you implement login in UserProvider
 
         showDialog(
           context: context,

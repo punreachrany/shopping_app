@@ -7,7 +7,7 @@ class AuthService {
   // Register User
   Future<String?> registerUser(String name, String email, String password,
       String birthday, String gender) async {
-    final url = Uri.parse('$BASE_URL/users/register');
+    final url = Uri.parse('$BASE_URL/users/register/');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -31,7 +31,7 @@ class AuthService {
   }
 
   Future<String?> loginUser(String email, String password) async {
-    final url = Uri.parse('$BASE_URL/users/login');
+    final url = Uri.parse('$BASE_URL/users/login/');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -45,6 +45,7 @@ class AuthService {
       final data = json.decode(response.body);
       // Save the JWT token in shared preferences
       await _saveToken(data['jwt']);
+      print("\nLogin Token : ${data['jwt']}\n");
       return data['jwt']; // Return the JWT token
     }
 
@@ -53,15 +54,17 @@ class AuthService {
 
   Future<String> logoutUser() async {
     final token = await _getToken(); // Get token from shared preferences
-    final url = Uri.parse('$BASE_URL/users/logout');
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // Send the token in headers
-      },
-      body: json.encode({}),
-    );
+    // Define headers including the JWT in the Cookie header
+
+    print("\nLogout Token : ${token!}\n");
+
+    final my_headers = {
+      'Content-Type': 'text/plain',
+      'Cookie': 'jwt=${token}', // Adding JWT as a cookie
+    };
+
+    final url = Uri.parse('$BASE_URL/users/logout/');
+    final response = await http.post(url, headers: my_headers);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -75,13 +78,12 @@ class AuthService {
   Future<Map<String, dynamic>?> getUserInfo() async {
     final token = await _getToken(); // Get token from shared preferences
     final url = Uri.parse('$BASE_URL/users/info');
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // Send the token in headers
-      },
-    );
+
+    final my_headers = {
+      'Content-Type': 'text/plain',
+      'Cookie': 'jwt=${token}', // Adding JWT as a cookie
+    };
+    final response = await http.get(url, headers: my_headers);
 
     if (response.statusCode == 200) {
       return json.decode(response.body); // Return user info as a Map

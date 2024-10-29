@@ -108,13 +108,17 @@ class UserDetails extends StatelessWidget {
                         TextButton(
                           child: const Text('Logout'),
                           onPressed: () async {
-                            await _auth.logoutUser();
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      Login()), // Navigate to main app page
-                            );
+                            final result = await _auth.logoutUser();
+                            if (result == "failed") {
+                              Navigator.pop(context);
+                            } else {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Login()), // Navigate to main app page
+                              );
+                            }
                           },
                         ),
                       ],
