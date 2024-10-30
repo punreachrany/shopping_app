@@ -48,6 +48,14 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                     width: 50,
                     height: 50,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/placeholder.jpg', // Replace with your local placeholder image
+                        height: 50,
+                        width: 50,
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
                   title: Text(concert.name),
                   subtitle: Text(
