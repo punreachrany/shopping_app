@@ -66,6 +66,8 @@ class ApiService {
       body: jsonEncode({'num_seats': numSeats}), // Encode body as JSON
     );
 
+    print("Response = ${response}");
+
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {

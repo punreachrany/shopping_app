@@ -111,12 +111,19 @@ class _ConcertDetailsScreenState extends State<ConcertDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Concert Image
           Image.network(
             concert.imageUrl,
             height: 250,
             width: double.infinity,
             fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                'assets/images/placeholder.jpg', // Replace with your local placeholder image
+                height: 180,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              );
+            },
           ),
           const SizedBox(height: 16),
 

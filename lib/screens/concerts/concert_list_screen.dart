@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shopping_app/models/concert.dart';
 import 'package:shopping_app/screens/concerts/concert_details_screen.dart';
 import 'package:shopping_app/services/api_service.dart';
+// import '../../../assets/images/placeholder.jpg';
 
 class ConcertListScreen extends StatefulWidget {
   @override
@@ -46,13 +47,24 @@ class _ConcertListScreenState extends State<ConcertListScreen> {
           }
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _onAddConcertPressed();
+        },
+        child: const Icon(Icons.add),
+        tooltip: 'Add Concert',
+      ),
     );
+  }
+
+  void _onAddConcertPressed() {
+    print('Add Concert button pressed');
+    // TODO: Implement navigation to add concert screen
   }
 
   Widget _buildConcertCard(Concert concert) {
     return GestureDetector(
       onTap: () {
-        // Navigate to the ConcertDetailsScreen when the card is tapped
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -68,7 +80,6 @@ class _ConcertListScreenState extends State<ConcertListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image with overlayed title
             Stack(
               children: [
                 ClipRRect(
@@ -81,6 +92,15 @@ class _ConcertListScreenState extends State<ConcertListScreen> {
                     height: 180,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        // '/Users/punreachrany/Desktop/New_Portfolio/shopping_app/assets/images/placeholder.jpg', // Replace with your local placeholder image
+                        'assets/images/placeholder.jpg',
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
                 ),
                 Positioned(
@@ -107,7 +127,7 @@ class _ConcertListScreenState extends State<ConcertListScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 8), // Spacing between image and details
+            const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Text(
@@ -129,7 +149,7 @@ class _ConcertListScreenState extends State<ConcertListScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 12), // Bottom spacing
+            const SizedBox(height: 12),
           ],
         ),
       ),
