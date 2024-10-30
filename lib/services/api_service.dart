@@ -72,4 +72,22 @@ class ApiService {
       throw Exception('Failed to book concert: ${response.body}');
     }
   }
+
+  Future<List<Booking>> fetchBookings() async {
+    final jwt = await TokenService().getToken();
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Cookie': 'jwt=$jwt', // Use Authorization header for JWT token
+    };
+    final response =
+        await http.get(Uri.parse('$BASE_URL/concert/mine/'), headers: headers);
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Booking.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load bookings');
+    }
+  }
 }

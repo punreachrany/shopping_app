@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_app/screens/concerts/booking_history_screen.dart';
 import 'package:shopping_app/screens/concerts/concert_list_screen.dart';
 import 'package:shopping_app/screens/orders/orders.dart';
 import 'package:shopping_app/screens/user_info/user_info.dart';
@@ -12,9 +13,9 @@ class NavigationWrapper extends StatefulWidget {
 class _NavigationWrapperState extends State<NavigationWrapper> {
   int currentTab = 0;
   final List<Widget> screens = [
-    ConcertListScreen(), // Home
-    OrdersPage(), // Shopping_Cart
-    UserDetails(), // Developer
+    ConcertListScreen(), // Concert List Screen
+    BookingHistoryScreen(), // Booking History
+    UserDetails(), // User Details
   ];
 
   final PageStorageBucket bucket = PageStorageBucket();

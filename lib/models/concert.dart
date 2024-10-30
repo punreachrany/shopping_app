@@ -32,3 +32,17 @@ class Concert {
     );
   }
 }
+
+class Booking {
+  final Concert concert;
+  final int numSeats;
+
+  Booking({required this.concert, required this.numSeats});
+
+  factory Booking.fromJson(Map<String, dynamic> json) {
+    return Booking(
+      concert: Concert.fromJson(json['concert']),
+      numSeats: json['num_seats'],
+    );
+  }
+}
