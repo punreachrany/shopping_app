@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shopping_app/screens/concerts/concert_list_screen.dart';
 import 'package:shopping_app/screens/orders/orders.dart';
-import 'package:shopping_app/screens/product_grid/product_gird.dart';
 import 'package:shopping_app/screens/user_info/user_info.dart';
 import 'package:shopping_app/themes/colors.dart';
 
@@ -13,7 +12,7 @@ class NavigationWrapper extends StatefulWidget {
 class _NavigationWrapperState extends State<NavigationWrapper> {
   int currentTab = 0;
   final List<Widget> screens = [
-    ProductGridPage(), // Home
+    ConcertListScreen(), // Home
     OrdersPage(), // Shopping_Cart
     UserDetails(), // Developer
   ];
