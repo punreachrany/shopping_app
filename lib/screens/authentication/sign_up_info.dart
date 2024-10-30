@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_app/screens/landing/landing.dart';
 import 'package:shopping_app/screens/navigation_wrapper.dart';
 import 'package:shopping_app/services/auth_service.dart';
 import 'package:shopping_app/services/user_provider.dart'; // Import your AuthService
@@ -81,11 +82,14 @@ class _SignUpInfoState extends State<SignUpInfo> {
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).popUntil((route) =>
+                        route.isFirst); // Pop all screens until the first
+                    // Now in the Login Screen
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              NavigationWrapper()), // Navigate to main app page
+                        builder: (context) => NavigationWrapper(),
+                      ),
                     );
                   },
                   child: const Text('OK'),
@@ -238,7 +242,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
         ),
         const Expanded(
           child: Text(
-            'I accept the terms and policies of this SUSU Shopping Application.',
+            'I accept the terms and policies of this Susu Concert Application.',
             style: TextStyle(
                 fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey),
           ),

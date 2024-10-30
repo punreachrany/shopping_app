@@ -90,7 +90,7 @@ class _LoginState extends State<Login> {
                     padding: const EdgeInsets.symmetric(vertical: 30),
                     child: const Center(
                       child: Text(
-                        "SUSU Shopping",
+                        "Susu Concert",
                         style: TextStyle(
                             fontSize: 40,
                             color: Colors.white,

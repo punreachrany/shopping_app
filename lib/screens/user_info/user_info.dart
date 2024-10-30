@@ -33,16 +33,13 @@ class UserDetails extends StatelessWidget {
 
           final userInfo = snapshot.data!;
           final String userName = userInfo['name'];
-          final String profileImageUrl = userInfo['profile_url'];
-          final String userBirthday = userInfo['birthday']; // Get the birthday
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildUserProfile(
-                    userName, profileImageUrl, userBirthday), // Pass birthday
+                _buildUserProfile(userName), // Only pass userName
                 const SizedBox(height: 20),
                 _buildMenuList(context),
               ],
@@ -53,37 +50,23 @@ class UserDetails extends StatelessWidget {
     );
   }
 
-  /// Builds the user profile section with picture, name, and birthday.
-  Widget _buildUserProfile(
-      String userName, String profileImageUrl, String userBirthday) {
+  /// Builds the user profile section with a person icon and name.
+  Widget _buildUserProfile(String userName) {
     return Column(
       children: [
         Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 40,
-              backgroundImage: NetworkImage(profileImageUrl),
+              child: Icon(Icons.person, size: 40), // Person icon
             ),
             const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  userName,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4), // Add some space
-                Text(
-                  userBirthday, // Display the birthday
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey, // Optional: make it a lighter color
-                  ),
-                ),
-              ],
+            Text(
+              userName,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -174,6 +157,7 @@ class UserDetails extends StatelessWidget {
                 if (result == "failed") {
                   Navigator.pop(context);
                 } else {
+                  Navigator.pop(context);
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
